@@ -1,0 +1,31 @@
+import http from 'node:http';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { housing, dining, filterListings } from './data/listings.js';
+const root = path.resolve(fileURLToPath(new URL('../dist/',import.meta.url)));
+const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'};
+export function createServer(){ return http.createServer(async(req,res)=>{
+ const url=new URL(req.url,'http://localhost');
+ const json=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));};
+ if(req.method!=='GET') return json(405,{error:'Only GET requests are supported.'});
+ if(url.pathname==='/api/health') return json(200,{status:'ok'});
+ for(const [name,items] of Object.entries({housing,dining})) {
+  if(url.pathname===`/api/${name}`){
+   if((url.searchParams.get('q')||'').length>200) return json(400,{error:'Search must be 200 characters or fewer.'});
+   const results=filterListings(items,url.searchParams);return json(200,{items:results,total:results.length});
+  }
+  if(url.pathname.startsWith(`/api/${name}/`)){
+   const item=items.find(i=>i.id===url.pathname.split('/')[3]);return item?json(200,item):json(404,{error:'Listing not found.'});
+  }
+ }
+ if(url.pathname.startsWith('/api/')) return json(404,{error:'API route not found.'});
+ try {
+  const requested=decodeURIComponent(url.pathname);
+  const target=path.resolve(root,'.'+requested);
+  if(target!==root&&!target.startsWith(root+path.sep)) return json(403,{error:'Forbidden'});
+  const file=path.extname(target)?target:path.join(root,'index.html');
+  const body=await readFile(file);res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','X-Content-Type-Options':'nosniff'});res.end(body);
+ }catch {json(404,{error:'Page not found. Run npm run build, or use npm run dev.'});}
+ });}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)) createServer().listen(Number(process.env.PORT)||3001,()=>console.log('Campus Survival API: http://localhost:3001'));
