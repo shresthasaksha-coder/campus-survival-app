@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campus Survival | UNT Student Guide</title>
+
+  <style>
+    :root {
+      --green: #174b39;
+      --light-green: #eaf2e8;
+      --background: #f7f8f4;
+      --text: #24372c;
+      --muted: #657267;
+      --border: #dce4d9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: var(--green);
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    a:focus-visible {
+      outline: 3px solid #8caf6e;
+      outline-offset: 4px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: 15px;
+      top: -60px;
+      background: white;
+      padding: 10px;
+      z-index: 10;
+    }
+
+    .skip-link:focus {
+      top: 10px;
+    }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-content {
+      max-width: 1150px;
+      margin: auto;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    nav button,
+    .filter {
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 9px 14px;
+      background: white;
+      color: var(--green);
+    }
+
+    nav button:hover,
+    .filter:hover {
+      background: var(--light-green);
+    }
+
+    main {
+      max-width: 1150px;
+      margin: auto;
+      padding: 30px 24px;
+    }
+
+    .hero {
+      background: var(--green);
+      color: white;
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.15;
+      margin: 15px 0;
+    }
+
+    .hero p {
+      max-width: 650px;
+      color: #e0eadc;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+      max-width: 700px;
+    }
+
+    .search-form input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+    }
+
+    .search-form button {
+      border: none;
+      border-radius: 7px;
+      padding: 12px 22px;
+      background: #d8e9b8;
+      color: #223d2b;
+      font-weight: bold;
+    }
+
+    .section-heading {
+      margin-top: 35px;
+      margin-bottom: 8px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      margin-top: 0;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 22px 0;
+    }
+
+    .filter.active {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+    }
+
+    .results-count {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .category {
+      color: var(--green);
+      background: var(--light-green);
+      border-radius: 5px;
+      padding: 3px 9px;
+      width: fit-content;
+      font-size: 12px;
+    }
+
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 0;
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 15px;
+    }
+
+    .source-link {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .save-button {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--green);
+      border-radius: 6px;
+      padding: 7px 12px;
+    }
+
+    .save-button[aria-pressed="true"] {
+      background: var(--light-green);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 35px;
+      text-align: center;
+      background: white;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+
+    .safety {
+      margin-top: 35px;
+      padding: 25px;
+      border: 1px solid #e9d4bd;
+      border-radius: 12px;
+      background: #fff5e9;
+    }
+
+    .safety h2 {
+      margin-top: 0;
+    }
+
+    .safety a {
+      display: inline-block;
+      margin-right: 20px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 25px;
+    }
+
+    #status {
+      min-height: 24px;
+      color: var(--green);
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    @media (max-width: 850px) {
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 550px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 25px;
+      }
+
+      .search-form {
+        flex-direction: column;
+      }
+
+      .header-content,
+      main {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header>
+    <div class="header-content">
+      <a class="brand" href="./index.html">Campus Survival</a>
+
+      <nav aria-label="Main navigation">
+        <button type="button" id="home-button">Home</button>
+        <button type="button" id="saved-button">Saved on this device</button>
+        <a href="#safety">Safety & Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="welcome-title">
+      <span class="eyebrow">UNT · Denton · Student life</span>
+
+      <h1 id="welcome-title">Make campus feel like home.</h1>
+
+      <p>
+        Find housing guidance, transportation information, food resources,
+        and student support in one place. Start exploring without an account.
+      </p>
+
+      <form class="search-form" id="search-form" role="search">
+        <input
+          id="search-input"
+          type="search"
+          aria-label="Search campus resources"
+          placeholder="Search housing, buses, food, or support..."
+          maxlength="150"
+        >
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <section aria-labelledby="resources-heading">
+      <h2 class="section-heading" id="resources-heading">
+        What do you need today?
+      </h2>
+
+      <p class="section-description">
+        Explore official resources for everyday student needs.
+      </p>
+
+      <div class="filters" role="group" aria-label="Filter resources">
+        <button class="filter active" data-category="All"
+          aria-pressed="true" type="button">All</button>
+
+        <button class="filter" data-category="Housing"
+          aria-pressed="false" type="button">Housing</button>
+
+        <button class="filter" data-category="Transit"
+          aria-pressed="false" type="button">Transit</button>
+
+        <button class="filter" data-category="Dining"
+          aria-pressed="false" type="button">Dining</button>
+
+        <button class="filter" data-category="Resources"
+          aria-pressed="false" type="button">Resources</button>
+      </div>
+
+      <p class="results-count" id="results-count" aria-live="polite"></p>
+      <div class="cards" id="resource-cards"></div>
+      <p id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="safety" id="safety" aria-labelledby="safety-heading">
+      <h2 id="safety-heading">Safety & Help</h2>
+
+      <p>
+        In an emergency, call 911. Campus Survival is a resource guide,
+        not an emergency response service.
+      </p>
+
+      <a href="tel:911">Call 911</a>
+
+      <a href="https://police.unt.edu/"
+         target="_blank" rel="noopener noreferrer">
+        UNT Police website ↗
+      </a>
+
+      <a href="https://www.unt.edu/success/resources/denton.html"
+         target="_blank" rel="noopener noreferrer">
+        Student support directory ↗
+      </a>
+    </section>
+
+    <p class="notice">
+      First frontend version: these links lead to official resource pages,
+      not live listings. Check current prices, hours, availability, and
+      schedules at the source. Saved items stay in this browser;
+      accounts and cross-device saving are not implemented yet.
+    </p>
+  </main>
+
+  <footer>
+    Campus Survival · CSCE 3444 · Group 7<br>
+    Student project. Not affiliated with or endorsed by UNT.
+  </footer>
+
+  <script>
+    "use strict";
+
+    const resources = [
+      {
+        id: "housing",
+        title: "Off-campus housing",
+        category: "Housing",
+        description:
+          "Explore official housing resources and guidance for living near campus.",
+        keywords: "apartment rent lease roommate",
+        url: "https://offcampushousing.unt.edu/resources/"
+      },
+      {
+        id: "move-in",
+        title: "Moving into UNT",
+        category: "Housing",
+        description:
+          "Find official move-in information for UNT residence halls.",
+        keywords: "dorm residence moving incoming",
+        url: "https://housing.unt.edu/move-in/index.html"
+      },
+      {
+        id: "transit",
+        title: "Getting around campus",
+        category: "Transit",
+        description:
+          "Start with UNT's transportation information for student travel.",
+        keywords: "bus shuttle parking bike route commute",
+        url: "https://transportation.unt.edu/student.html"
+      },
+      {
+        id: "dining",
+        title: "Food and dining resources",
+        category: "Dining",
+        description:
+          "Use UNT's student directory to find dining and food support links.",
+        keywords: "food meal grocery pantry restaurant",
+        url: "https://www.unt.edu/success/resources/denton.html"
+      },
+      {
+        id: "academic",
+        title: "Academic support",
+        category: "Resources",
+        description:
+          "Find university resources for studying, tutoring, and academic support.",
+        keywords: "academic tutoring library advising study",
+        url: "https://www.unt.edu/success/resources/denton.html"
+      },
+      {
+        id: "wellness",
+        title: "Health and student support",
+        category: "Resources",
+        description:
+          "Find official health, wellness, and student support resources.",
+        keywords: "health wellness counseling help",
+        url: "https://www.unt.edu/success/resources/denton.html"
+      }
+    ];
+
+    const storageKey = "campus-survival-bookmarks";
+    const searchInput = document.getElementById("search-input");
+    const cards = document.getElementById("resource-cards");
+    const status = document.getElementById("status");
+
+    let category = "All";
+    let query = "";
+    let savedOnly = false;
+    let saved = [];
+
+    try {
+      const stored = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+      if (Array.isArray(stored)) {
+        saved = [...new Set(stored)].filter(id =>
+          resources.some(resource => resource.id === id)
+        );
+      }
+    } catch {
+      saved = [];
+    }
+
+    function saveResource(id) {
+      const alreadySaved = saved.includes(id);
+
+      const updated = alreadySaved
+        ? saved.filter(savedId => savedId !== id)
+        : [...saved, id];
+
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+        saved = updated;
+
+        status.textContent = alreadySaved
+          ? "Resource removed from this device."
+          : "Resource saved on this device.";
+
+        renderResources();
+      } catch {
+        status.textContent =
+          "Saving is unavailable. Check your browser's storage settings.";
+      }
+    }
+
+    function renderResources() {
+      const matches = resources.filter(resource => {
+        const searchableText = [
+          resource.title,
+          resource.description,
+          resource.category,
+          resource.keywords
+        ].join(" ").toLowerCase();
+
+        return (
+          (category === "All" || resource.category === category) &&
+          searchableText.includes(query.toLowerCase()) &&
+          (!savedOnly || saved.includes(resource.id))
+        );
+      });
+
+      document.getElementById("resources-heading").textContent =
+        savedOnly ? "Saved on this device" : "What do you need today?";
+
+      document.getElementById("results-count").textContent =
+        matches.length + (matches.length === 1 ? " resource" : " resources");
+
+      document.querySelectorAll(".filter").forEach(button => {
+        const active = button.dataset.category === category;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+
+      cards.replaceChildren();
+
+      if (matches.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+
+        const message = document.createElement("p");
+        message.textContent = savedOnly
+          ? "No saved resources match. Save a resource from Home first."
+          : "No resources match. Try another search or clear your filters.";
+
+        const reset = document.createElement("button");
+        reset.className = "save-button";
+        reset.type = "button";
+        reset.textContent = "Show all resources";
+        reset.addEventListener("click", resetView);
+
+        empty.append(message, reset);
+        cards.append(empty);
+        return;
+      }
+
+      matches.forEach(resource => {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        const label = document.createElement("span");
+        label.className = "category";
+        label.textContent = resource.category;
+
+        const title = document.createElement("h3");
+        title.textContent = resource.title;
+
+        const description = document.createElement("p");
+        description.textContent = resource.description;
+
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+
+        const link = document.createElement("a");
+        link.className = "source-link";
+        link.href = resource.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Official resource ↗";
+
+        const save = document.createElement("button");
+        const isSaved = saved.includes(resource.id);
+
+        save.type = "button";
+        save.className = "save-button";
+        save.textContent = isSaved ? "Remove saved" : "Save";
+        save.setAttribute("aria-pressed", String(isSaved));
+        save.setAttribute(
+          "aria-label",
+          (isSaved ? "Remove " : "Save ") + resource.title
+        );
+
+        save.addEventListener("click", () => saveResource(resource.id));
+
+        actions.append(link, save);
+        card.append(label, title, description, actions);
+        cards.append(card);
+      });
+    }
+
+    function resetView() {
+      category = "All";
+      query = "";
+      savedOnly = false;
+      searchInput.value = "";
+      status.textContent = "";
+      renderResources();
+    }
+
+    document.getElementById("search-form").addEventListener("submit", event => {
+      event.preventDefault();
+      query = searchInput.value.trim();
+      renderResources();
+    });
+
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        category = button.dataset.category;
+        renderResources();
+      });
+    });
+
+    document.getElementById("home-button")
+      .addEventListener("click", resetView);
+
+    document.getElementById("saved-button").addEventListener("click", () => {
+      category = "All";
+      query = "";
+      searchInput.value = "";
+      savedOnly = true;
+      status.textContent = "";
+      renderResources();
+
+      document.getElementById("resources-heading")
+        .scrollIntoView({ block: "start" });
+    });
+
+    renderResources();
+  </script>
+</body>
+</html>
